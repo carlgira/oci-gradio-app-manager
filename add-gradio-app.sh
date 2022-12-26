@@ -36,7 +36,7 @@ EOT
 
 cat <<EOT >> /etc/nginx/sites-available/$APP_NAME
 server {
-    listen 80;
+    listen 8000;
 
     location /$APP_NAME {
         include uwsgi_params;
@@ -86,4 +86,4 @@ EOT
 sudo bash -c "$(declare -f add_gradio_app_root); add_gradio_app_root $USER $APP_NAME $APP_DIR $HUGGINGFACE_TOKEN_NAME $HUGGINGFACE_TOKEN_VALUE $GRADIO_SERVER_PORT"
 }
 
-add_gradio_app 2>&1 > $APP_DIR/startup.log
+add_gradio_app 2>&1 >> startup.log

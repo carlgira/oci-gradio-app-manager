@@ -32,10 +32,6 @@ ExecStart=/bin/bash $APP_DIR/start.sh
 WantedBy=multi-user.target
 EOT
 
-READ_TOKEN=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
-GRADIO_SERVER_PORT=10011
-/home/ubuntu/dreambooth-image-editor/.venv/bin/python /home/ubuntu/dreambooth-image-editor/app.py
-
 cat <<EOT >> /etc/nginx/sites-available/$APP_NAME
 server {
     listen 8000;

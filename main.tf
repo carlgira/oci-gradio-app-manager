@@ -118,7 +118,7 @@ output "instance_public_ip" {
   ssh -i server.key ubuntu@${oci_core_instance.instance.public_ip}
   
   ssh tunnel => 
-    ssh -i server.key -L -L 8000:localhost:8000 ubuntu@${oci_core_instance.instance.public_ip}
+    ssh -i server.key -L 8000:localhost:8000 ubuntu@${oci_core_instance.instance.public_ip}
 
 EOF
 }

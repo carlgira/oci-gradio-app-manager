@@ -3,7 +3,7 @@ PARAM=($1)
 APP_NAME=${PARAM[0]}
 GITHUB_REPO=${PARAM[1]}
 HUGGINGFACE_TOKEN_NAME=${PARAM[2]}
-HUGGINGFACE_TOKEN_VALUE=$(cat ~/.huggingface_token)
+HUGGINGFACE_TOKEN_VALUE=$(curl -s -H "Authorization: Bearer Oracle" -L http://169.254.169.254/opc/v2/instance/ | jq -r '.metadata.huggingface_token')
 
 USER='ubuntu'
 HOME_DIR=$(eval echo ~$USER)

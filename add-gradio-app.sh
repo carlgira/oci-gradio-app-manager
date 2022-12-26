@@ -26,18 +26,21 @@ After=network.target
 User=$USER
 Group=www-data
 WorkingDirectory=$APP_DIR
-ExecStart=$HUGGINGFACE_TOKEN_NAME=$HUGGINGFACE_TOKEN_VALUE; GRADIO_SERVER_PORT=$GRADIO_SERVER_PORT; $APP_DIR/.venv/bin/python $APP_DIR/app.py
+ExecStart=/bin/bash $APP_DIR/start.sh
 
 [Install]
 WantedBy=multi-user.target
 EOT
 
+READ_TOKEN=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
+GRADIO_SERVER_PORT=10011
+/home/ubuntu/dreambooth-image-editor/.venv/bin/python /home/ubuntu/dreambooth-image-editor/app.py
 
 cat <<EOT >> /etc/nginx/sites-available/$APP_NAME
 server {
     listen 8000;
 
-    location /$APP_NAME {
+    location /$APP_NAME/ {
         proxy_set_header Host \$host;
         proxy_pass http://127.0.0.1:$GRADIO_SERVER_PORT/;
     }
@@ -67,23 +70,15 @@ else
 fi
 
 NUM_FILES=$(ls -1qA ~ | wc -l)
-GRADIO_SERVER_PORT=$((NUM_FILES + 1000))
+GRADIO_SERVER_PORT=$((NUM_FILES + 10000))
 
-cat <<EOT >> $HOME_DIR/$APP_NAME/uswgi.ini
-[uwsgi]
-module = app
-
-master = true
-processes = 1
-
-socket = /tmp/app.sock
-chmod-socket = 660
-vacuum = true
-
-die-on-term = true
+cat <<EOT >> $APP_DIR/start.sh
+$HUGGINGFACE_TOKEN_NAME=$HUGGINGFACE_TOKEN_VALUE 
+GRADIO_SERVER_PORT=$GRADIO_SERVER_PORT 
+$APP_DIR/.venv/bin/python $APP_DIR/app.py
 EOT
 
 sudo bash -c "$(declare -f add_gradio_app_root); add_gradio_app_root $USER $APP_NAME $APP_DIR $HUGGINGFACE_TOKEN_NAME $HUGGINGFACE_TOKEN_VALUE $GRADIO_SERVER_PORT"
 }
 
-add_gradio_app 2>&1 >> startup.log
+add_gradio_app 2>&1 >> /tmp/startup.log

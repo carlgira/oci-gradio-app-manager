@@ -1,7 +1,7 @@
 #!/bin/bash
-
-GITHUB_REPO=${PARAM[0]}
-APP_NAME=${PARAM[1]}
+PARAM=($1)
+APP_NAME=${PARAM[0]}
+GITHUB_REPO=${PARAM[1]}
 HUGGINGFACE_TOKEN_NAME=${PARAM[2]}
 HUGGINGFACE_TOKEN_VALUE=$(cat ~/.huggingface_token)
 
@@ -34,7 +34,13 @@ vacuum = true
 die-on-term = true
 EOT
 
-sudo cat <<EOT >> /etc/systemd/system/$APP_NAME.service
+sudo add_gradio_app_root $USER $APP_NAME $APP_DIR $HUGGINGFACE_TOKEN_NAME $HUGGINGFACE_TOKEN_VALUE $GRADIO_SERVER_PORT
+
+}
+
+add_gradio_app_root(USER, APP_NAME, APP_DIR, HUGGINGFACE_TOKEN_NAME, HUGGINGFACE_TOKEN_VALUE, GRADIO_SERVER_PORT) {
+
+cat <<EOT >> /etc/systemd/system/$APP_NAME.service
 [Unit]
 Description=uWSGI instance to serve $APP_NAME
 After=network.target
@@ -50,7 +56,8 @@ ExecStart=$APP_DIR/.venv/bin/uwsgi --ini uswgi.ini
 WantedBy=multi-user.target
 EOT
 
-sudo cat <<EOT >> /etc/nginx/sites-available/$APP_NAME
+
+cat <<EOT >> /etc/nginx/sites-available/$APP_NAME
 server {
     listen 80;
 
@@ -61,12 +68,12 @@ server {
 }
 EOT
 
-sudo ln -s /etc/nginx/sites-available/$APP_NAME /etc/nginx/sites-enabled
+ln -s /etc/nginx/sites-available/$APP_NAME /etc/nginx/sites-enabled
 
-sudo systemctl daemon-reload
-sudo systemctl start $APP_NAME
-sudo systemctl enable $APP_NAME
-sudo systemctl restart nginx
+systemctl daemon-reload
+systemctl start $APP_NAME
+systemctl enable $APP_NAME
+systemctl restart nginx
 }
 
 add_gradio_app 2>&1 > $APP_DIR/startup.log

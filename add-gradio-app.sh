@@ -48,8 +48,8 @@ EOT
 ln -s /etc/nginx/sites-available/$APP_NAME /etc/nginx/sites-enabled
 
 systemctl daemon-reload
-systemctl start $APP_NAME
 systemctl enable $APP_NAME
+systemctl restart $APP_NAME
 systemctl restart nginx
 }
 
@@ -71,7 +71,7 @@ GRADIO_SERVER_PORT=$((NUM_FILES + 1000))
 
 cat <<EOT >> $HOME_DIR/$APP_NAME/uswgi.ini
 [uwsgi]
-module = wsgi:app
+module = app
 
 master = true
 processes = 1

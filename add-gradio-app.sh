@@ -27,7 +27,7 @@ User=$USER
 Group=www-data
 WorkingDirectory=$APP_DIR
 Environment="PATH=$APP_DIR/.venv/bin; $HUGGINGFACE_TOKEN_NAME=$HUGGINGFACE_TOKEN_VALUE; GRADIO_SERVER_PORT=$GRADIO_SERVER_PORT"
-ExecStart=$APP_DIR/.venv/bin/uwsgi --ini uswgi.ini
+ExecStart=$APP_DIR/.venv/bin/uwsgi --ini $APP_DIR/uswgi.ini
 
 [Install]
 WantedBy=multi-user.target
@@ -40,7 +40,7 @@ server {
 
     location /$APP_NAME {
         include uwsgi_params;
-        uwsgi_pass unix:$APP_DIR/$APP_NAME.sock;
+        uwsgi_pass unix:$APP_DIR/app.sock;
     }
 }
 EOT
@@ -56,11 +56,15 @@ systemctl restart nginx
 
 add_gradio_app() {
 
-git clone $GITHUB_REPO ~/$APP_NAME
-python3 -m venv ~/$APP_NAME/.venv
-source ~/$APP_NAME/.venv/bin/activate
-pip install -r ~/$APP_NAME/requirements.txt
-pip install gradio uwsgi
+if [[ -f ~/$APP_NAME/.venv/bin/activate ]]
+then
+    source ~/$APP_NAME/.venv/bin/activate
+else
+    git clone $GITHUB_REPO ~/$APP_NAME
+    python3 -m venv ~/$APP_NAME/.venv
+    pip install -r ~/$APP_NAME/requirements.txt
+    pip install gradio uwsgi
+fi
 
 NUM_FILES=$(ls -1qA ~ | wc -l)
 GRADIO_SERVER_PORT=$((NUM_FILES + 1000))
@@ -72,15 +76,14 @@ module = wsgi:app
 master = true
 processes = 1
 
-socket = $APP_NAME.sock
+socket = app.sock
 chmod-socket = 660
 vacuum = true
 
 die-on-term = true
 EOT
 
-sudo add_gradio_app_root $USER $APP_NAME $APP_DIR $HUGGINGFACE_TOKEN_NAME $HUGGINGFACE_TOKEN_VALUE $GRADIO_SERVER_PORT
-
+sudo bash -c "$(declare -f add_gradio_app_root); add_gradio_app_root $USER $APP_NAME $APP_DIR $HUGGINGFACE_TOKEN_NAME $HUGGINGFACE_TOKEN_VALUE $GRADIO_SERVER_PORT"
 }
 
 add_gradio_app 2>&1 > $APP_DIR/startup.log

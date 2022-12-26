@@ -26,8 +26,7 @@ After=network.target
 User=$USER
 Group=www-data
 WorkingDirectory=$APP_DIR
-Environment="PATH=$APP_DIR/.venv/bin; $HUGGINGFACE_TOKEN_NAME=$HUGGINGFACE_TOKEN_VALUE; GRADIO_SERVER_PORT=$GRADIO_SERVER_PORT"
-ExecStart=$APP_DIR/.venv/bin/uwsgi --ini $APP_DIR/uswgi.ini
+ExecStart=$HUGGINGFACE_TOKEN_NAME=$HUGGINGFACE_TOKEN_VALUE; GRADIO_SERVER_PORT=$GRADIO_SERVER_PORT; $APP_DIR/.venv/bin/python $APP_DIR/app.py
 
 [Install]
 WantedBy=multi-user.target
@@ -39,8 +38,8 @@ server {
     listen 8000;
 
     location /$APP_NAME {
-        include uwsgi_params;
-        uwsgi_pass unix:$APP_DIR/app.sock;
+        proxy_set_header Host \$host;
+        proxy_pass http://127.0.0.1:$GRADIO_SERVER_PORT/;
     }
 }
 EOT
@@ -64,7 +63,7 @@ else
     python3 -m venv ~/$APP_NAME/.venv
     source ~/$APP_NAME/.venv/bin/activate
     pip install -r ~/$APP_NAME/requirements.txt
-    pip install gradio uwsgi
+    pip install gradio
 fi
 
 NUM_FILES=$(ls -1qA ~ | wc -l)
@@ -77,7 +76,7 @@ module = app
 master = true
 processes = 1
 
-socket = app.sock
+socket = /tmp/app.sock
 chmod-socket = 660
 vacuum = true
 

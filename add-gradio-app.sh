@@ -62,6 +62,7 @@ then
 else
     git clone $GITHUB_REPO ~/$APP_NAME
     python3 -m venv ~/$APP_NAME/.venv
+    source ~/$APP_NAME/.venv/bin/activate
     pip install -r ~/$APP_NAME/requirements.txt
     pip install gradio uwsgi
 fi

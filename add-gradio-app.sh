@@ -34,7 +34,7 @@ cat <<EOT > /etc/nginx/sites-available/gradio-app-manager
 server {
     listen 8000;
 
-    $NGIX_LOCATION
+$NGIX_LOCATION
     # NEXT_LOCATION_FLAG
 }
 EOT

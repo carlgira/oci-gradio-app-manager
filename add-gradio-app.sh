@@ -71,6 +71,7 @@ GRADIO_SERVER_PORT=$((NUM_FILES + 10000))
         done
     fi
 
+    pip install --upgrade pip
     pip install gradio
     pip install -r $APP_DIR/requirements.txt
     

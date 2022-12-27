@@ -16,7 +16,7 @@ sudo -c "echo 'export PATH=/usr/local/cuda/bin:$PATH' >> ~/.bashrc" $USER
 # Add apps
 su -c "wget -O /home/$USER/gradio-apps.json https://raw.githubusercontent.com/carlgira/oci-gradio-app-manager/main/gradio-apps.json" $USER
 su -c "wget -O /home/$USER/add-gradio-app.sh https://raw.githubusercontent.com/carlgira/oci-gradio-app-manager/main/add-gradio-app.sh" $USER
-su -c "sh /home/$USER/add-gradio-app.sh /home/$USER/gradio-apps.json" $USER
+su -c "source /home/$USER/add-gradio-app.sh /home/$USER/gradio-apps.json" $USER
 
 }
 

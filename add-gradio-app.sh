@@ -52,15 +52,12 @@ REQUIREMENTS=$3
 ENVIRONMENT=$4
 APP_DIR=$HOME_DIR/$APP_NAME
 
-if [[ -f ~/$APP_NAME/.venv/bin/activate ]]
+# check if file does not exists
+if [[ ! -f $APP_DIR/.venv/bin/activate ]]
 then
-    source ~/$APP_NAME/.venv/bin/activate
-else
-    git clone $GITHUB_REPO ~/$APP_NAME
-    python3 -m venv ~/$APP_NAME/.venv
-    source ~/$APP_NAME/.venv/bin/activate
-    pip install -r ~/$APP_NAME/requirements.txt
-    pip install gradio
+    git clone $GITHUB_REPO $APP_DIR
+    python3 -m venv $APP_DIR/.venv
+    source $APP_DIR/.venv/bin/activate
 fi
 
 NUM_FILES=$(ls -1qA ~ | wc -l)
@@ -73,6 +70,10 @@ GRADIO_SERVER_PORT=$((NUM_FILES + 10000))
             echo $c >> $APP_DIR/requirements.txt
         done
     fi
+
+    pip install gradio
+    pip install -r $APP_DIR/requirements.txt
+    
 
     # check in ENVIRONMENT is not null
     if [ "$ENVIRONMENT" != "null" ]; then

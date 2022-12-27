@@ -9,6 +9,7 @@ USER=$1
 APP_NAME=$2
 APP_DIR=$3 
 GRADIO_SERVER_PORT=$4
+DEPENDENCIES=$5
 
 cat <<EOT > /etc/systemd/system/$APP_NAME.service
 [Unit]
@@ -42,6 +43,10 @@ LINE_NUMBER=$(awk '/#/ {print FNR}' gradio-app-manager)
 awk -v location="$NGIX_LOCATION" -v lineNumber="$LINE_NUMBER" 'NR==lineNumber{print location}1' /etc/nginx/sites-available/gradio-app-manager > /etc/nginx/sites-available/gradio-app-manager
 fi
 
+if [ "$DEPENDENCIES" != "null" ]; then
+sudo apt-get install $DEPENDENCIES -y
+fi
+
 ln -s /etc/nginx/sites-available/gradio-app-manager /etc/nginx/sites-enabled
 
 systemctl daemon-reload
@@ -56,6 +61,7 @@ APP_NAME=$1
 GITHUB_REPO=$2
 REQUIREMENTS=$3
 ENVIRONMENT=$4
+DEPENDENCIES=$5
 APP_DIR=$HOME_DIR/$APP_NAME
 
 if [[ ! -f "$APP_DIR"/.venv/bin/activate ]]
@@ -95,7 +101,7 @@ export GRADIO_SERVER_PORT=$GRADIO_SERVER_PORT
 $APP_DIR/.venv/bin/python $APP_DIR/app.py
 EOT
 
-sudo bash -c "$(declare -f add_gradio_app_root); add_gradio_app_root $USER $APP_NAME $APP_DIR $GRADIO_SERVER_PORT"
+sudo bash -c "$(declare -f add_gradio_app_root); add_gradio_app_root $USER $APP_NAME $APP_DIR $GRADIO_SERVER_PORT \"$DEPENDENCIES\""
 }
 
 add_all_apps(){
@@ -107,8 +113,9 @@ while IFS=$"\n" read -r c; do
     APP_URL=$(echo "$c" | jq -r '.appUrl')
     REQUIREMENTS=$(echo "$c" | jq -r '.requirements')
     ENVIRONMENT=$(echo "$c" | jq -r '.environment')
+    DEPENDENCIES=$(echo "$c" | jq -r '.Osdependencies')
 
-    add_gradio_app $APP_NAME $APP_URL "$REQUIREMENTS" "$ENVIRONMENT"
+    add_gradio_app $APP_NAME $APP_URL "$REQUIREMENTS" "$ENVIRONMENT" "$DEPENDENCIES"
 done
 
 }

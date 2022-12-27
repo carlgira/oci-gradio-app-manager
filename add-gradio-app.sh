@@ -53,7 +53,7 @@ ENVIRONMENT=$4
 APP_DIR=$HOME_DIR/$APP_NAME
 
 # check if file does not exists
-if [[ ! -f $APP_DIR/.venv/bin/activate ]]
+if [[ ! -f "$APP_DIR"/.venv/bin/activate ]]
 then
     git clone $GITHUB_REPO $APP_DIR
     python3 -m venv $APP_DIR/.venv

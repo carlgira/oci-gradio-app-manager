@@ -12,7 +12,7 @@ GRADIO_SERVER_PORT=$4
 
 cat <<EOT > /etc/systemd/system/$APP_NAME.service
 [Unit]
-Description=uWSGI instance to serve $APP_NAME
+Description=Instance to serve $APP_NAME
 After=network.target
 
 [Service]
@@ -25,16 +25,24 @@ ExecStart=/bin/bash $APP_DIR/start.sh
 WantedBy=multi-user.target
 EOT
 
-cat <<EOT > /etc/nginx/sites-available/$APP_NAME
+NGIX_LOCATION="    location /$APP_NAME/ {\n        proxy_set_header Host \$host;\n        proxy_pass http://127.0.0.1:$GRADIO_SERVER_PORT/;\n    }\n"
+    
+if [[ ! -f /etc/nginx/sites-available/gradio-app-manager ]]
+then
+cat <<EOT > /etc/nginx/sites-available/gradio-app-manager
 server {
     listen 8000;
 
-    location /$APP_NAME/ {
-        proxy_set_header Host \$host;
-        proxy_pass http://127.0.0.1:$GRADIO_SERVER_PORT/;
-    }
+    $NGIX_LOCATION
+
+    # NEXT_LOCATION_FLAG
 }
 EOT
+else
+    printf "\n%s\n" "${delimiter}"
+    printf "Running on \e[1m\e[32m%s\e[0m user" "$(whoami)"
+    printf "\n%s\n" "${delimiter}"
+fi
 
 ln -s /etc/nginx/sites-available/$APP_NAME /etc/nginx/sites-enabled
 
@@ -102,7 +110,7 @@ while IFS=$"\n" read -r c; do
     REQUIREMENTS=$(echo "$c" | jq -r '.requirements')
     ENVIRONMENT=$(echo "$c" | jq -r '.environment')
 
-    add_gradio_app $APP_NAME $APP_URL "$REQUIREMENTS" $ENVIRONMENT
+    add_gradio_app $APP_NAME $APP_URL "$REQUIREMENTS" "$ENVIRONMENT"
 done
 
 }

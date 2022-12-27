@@ -1,21 +1,14 @@
 #!/bin/bash
-PARAM=($1)
-APP_NAME=${PARAM[0]}
-GITHUB_REPO=${PARAM[1]}
-HUGGINGFACE_TOKEN_NAME=${PARAM[2]}
-HUGGINGFACE_TOKEN_VALUE=$(curl -s -H "Authorization: Bearer Oracle" -L http://169.254.169.254/opc/v2/instance/ | jq -r '.metadata.huggingface_token')
 
 USER='ubuntu'
 HOME_DIR=$(eval echo ~$USER)
-APP_DIR=$HOME_DIR/$APP_NAME
+
 
 add_gradio_app_root() {
 USER=$1 
 APP_NAME=$2
 APP_DIR=$3 
-HUGGINGFACE_TOKEN_NAME=$4 
-HUGGINGFACE_TOKEN_VALUE=$5 
-GRADIO_SERVER_PORT=$6
+GRADIO_SERVER_PORT=$4
 
 cat <<EOT >> /etc/systemd/system/$APP_NAME.service
 [Unit]
@@ -53,6 +46,11 @@ systemctl restart nginx
 
 
 add_gradio_app() {
+APP_NAME=$1
+GITHUB_REPO=$2
+REQUIREMENTS=$3
+ENVIRONMENT=$4
+APP_DIR=$HOME_DIR/$APP_NAME
 
 if [[ -f ~/$APP_NAME/.venv/bin/activate ]]
 then
@@ -68,13 +66,43 @@ fi
 NUM_FILES=$(ls -1qA ~ | wc -l)
 GRADIO_SERVER_PORT=$((NUM_FILES + 10000))
 
-cat <<EOT >> $APP_DIR/start.sh
-export $HUGGINGFACE_TOKEN_NAME=$HUGGINGFACE_TOKEN_VALUE 
-export GRADIO_SERVER_PORT=$GRADIO_SERVER_PORT 
-$APP_DIR/.venv/bin/python $APP_DIR/app.py
-EOT
+    if [ "$REQUIREMENTS" != "null" ]; then
+        rm $APP_DIR/requirements.txt
+        echo "$REQUIREMENTS" | jq -r -c '.[]' |
+        while IFS=$"\n" read -r c; do
+            echo $c >> $APP_DIR/requirements.txt
+        done
+    fi
 
-sudo bash -c "$(declare -f add_gradio_app_root); add_gradio_app_root $USER $APP_NAME $APP_DIR $HUGGINGFACE_TOKEN_NAME $HUGGINGFACE_TOKEN_VALUE $GRADIO_SERVER_PORT"
+    # check in ENVIRONMENT is not null
+    if [ "$ENVIRONMENT" != "null" ]; then
+        VARS=''
+        for s in $(echo $ENVIRONMENT | jq -r "to_entries|map(\"\(.key)=\u0027\(.value|tostring)\u0027\")|.[]" ); do
+            VARS=$(echo -e "$VARS \n export $s")
+        done
+        cat <<EOT >> $APP_DIR/start.sh
+        $VARS
+        export GRADIO_SERVER_PORT=$GRADIO_SERVER_PORT 
+        $APP_DIR/.venv/bin/python $APP_DIR/app.py
+EOT
+    fi
+
+sudo bash -c "$(declare -f add_gradio_app_root); add_gradio_app_root $USER $APP_NAME $APP_DIR $GRADIO_SERVER_PORT"
 }
 
-add_gradio_app 2>&1 >> /tmp/startup.log
+add_all_apps(){
+CONF_FILE=$1
+
+cat $CONF_FILE | jq -c '.[]' |
+while IFS=$"\n" read -r c; do
+    APP_NAME=$(echo "$c" | jq -r '.appName')
+    APP_URL=$(echo "$c" | jq -r '.appUrl')
+    REQUIREMENTS=$(echo "$c" | jq -r '.requirements')
+    ENVIRONMENT=$(echo "$c" | jq -r '.environment')
+
+    add_gradio_app $APP_NAME $APP_URL $REQUIREMENTS $ENVIRONMENT
+done
+
+}
+
+add_all_apps $1 2>&1 >> /tmp/startup.log

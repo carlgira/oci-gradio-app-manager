@@ -25,7 +25,3 @@ variable "subnet_cidr" {
 variable "vcn_cidr" {
   description = ""
 }
-
-variable "huggingface_token" {
-  description = ""
-}

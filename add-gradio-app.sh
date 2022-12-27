@@ -52,13 +52,13 @@ REQUIREMENTS=$3
 ENVIRONMENT=$4
 APP_DIR=$HOME_DIR/$APP_NAME
 
-# check if file does not exists
 if [[ ! -f "$APP_DIR"/.venv/bin/activate ]]
 then
     git clone $GITHUB_REPO $APP_DIR
     python3 -m venv $APP_DIR/.venv
-    source $APP_DIR/.venv/bin/activate
 fi
+
+source $APP_DIR/.venv/bin/activate
 
 NUM_FILES=$(ls -1qA ~ | wc -l)
 GRADIO_SERVER_PORT=$((NUM_FILES + 10000))
@@ -74,19 +74,18 @@ GRADIO_SERVER_PORT=$((NUM_FILES + 10000))
     pip install gradio
     pip install -r $APP_DIR/requirements.txt
     
-
+    VARS=''
     # check in ENVIRONMENT is not null
     if [ "$ENVIRONMENT" != "null" ]; then
-        VARS=''
         for s in $(echo $ENVIRONMENT | jq -r "to_entries|map(\"\(.key)=\u0027\(.value|tostring)\u0027\")|.[]" ); do
             VARS=$(echo -e "$VARS \n export $s")
         done
-        cat <<EOT >> $APP_DIR/start.sh
+    fi
+    cat <<EOT >> $APP_DIR/start.sh
         $VARS
         export GRADIO_SERVER_PORT=$GRADIO_SERVER_PORT 
         $APP_DIR/.venv/bin/python $APP_DIR/app.py
 EOT
-    fi
 
 sudo bash -c "$(declare -f add_gradio_app_root); add_gradio_app_root $USER $APP_NAME $APP_DIR $GRADIO_SERVER_PORT"
 }

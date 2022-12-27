@@ -58,7 +58,7 @@ sh generate-keys.sh
 - **appUrl:** The git repo of the gradio app. 
 - **requirements:** If there is problem with the original requirements.txt, or one of the dependencies is set for a specific not supported OS, you can change the requirements of the app.
 - **Osdependencies:** Set of ubuntu OS dependencies if the app needs something aditional.
-- **enviroment** : Set of key value pair, for aditional configuration of the gradio app. 
+- **environment** : Set of key value pair, for aditional configuration of the gradio app. 
 
 ## Build
 To build simply execute the next commands. 

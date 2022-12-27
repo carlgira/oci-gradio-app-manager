@@ -25,7 +25,7 @@ ExecStart=/bin/bash $APP_DIR/start.sh
 WantedBy=multi-user.target
 EOT
 
-NGIX_LOCATION="    location /$APP_NAME/ {\n        proxy_set_header Host \$host;\n        proxy_pass http://127.0.0.1:$GRADIO_SERVER_PORT/;\n    }\n"
+NGIX_LOCATION="    location /$APP_NAME/ {proxy_set_header Host \$host; proxy_pass http://127.0.0.1:$GRADIO_SERVER_PORT/;}"
     
 if [[ ! -f /etc/nginx/sites-available/gradio-app-manager ]]
 then
@@ -39,10 +39,10 @@ server {
 }
 EOT
 else
-sed -i "s/# NEXT_LOCATION_FLAG/$NGIX_LOCATION# NEXT_LOCATION_FLAG/" /etc/nginx/sites-available/gradio-app-manager
+sed -i "s/# NEXT_LOCATION_FLAG/$NGIX_LOCATION \n# NEXT_LOCATION_FLAG/" /etc/nginx/sites-available/gradio-app-manager
 fi
 
-ln -s /etc/nginx/sites-available/$APP_NAME /etc/nginx/sites-enabled
+ln -s /etc/nginx/sites-available/gradio-app-manager /etc/nginx/sites-enabled
 
 systemctl daemon-reload
 systemctl enable $APP_NAME

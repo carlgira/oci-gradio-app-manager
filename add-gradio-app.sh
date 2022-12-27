@@ -26,7 +26,7 @@ WantedBy=multi-user.target
 EOT
 
 NGIX_LOCATION="    location /$APP_NAME/ {proxy_set_header Host \$host; proxy_pass http://127.0.0.1:$GRADIO_SERVER_PORT/;}"
-    
+
 if [[ ! -f /etc/nginx/sites-available/gradio-app-manager ]]
 then
 cat <<EOT > /etc/nginx/sites-available/gradio-app-manager
@@ -34,12 +34,12 @@ server {
     listen 8000;
 
     $NGIX_LOCATION
-
     # NEXT_LOCATION_FLAG
 }
 EOT
 else
-sed -i "s/# NEXT_LOCATION_FLAG/$NGIX_LOCATION \n# NEXT_LOCATION_FLAG/" /etc/nginx/sites-available/gradio-app-manager
+LINE_NUMBER=$(awk '/#/ {print FNR}' gradio-app-manager)
+awk -v location="$NGIX_LOCATION" -v lineNumber="$LINE_NUMBER" 'NR==lineNumber{print location}1' /etc/nginx/sites-available/gradio-app-manager > /etc/nginx/sites-available/gradio-app-manager
 fi
 
 ln -s /etc/nginx/sites-available/gradio-app-manager /etc/nginx/sites-enabled

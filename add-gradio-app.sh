@@ -39,7 +39,7 @@ server {
 }
 EOT
 else
-LINE_NUMBER=$(awk '/#/ {print FNR}' gradio-app-manager)
+LINE_NUMBER=$(awk '/#/ {print FNR}' /etc/nginx/sites-available/gradio-app-manager)
 awk -v location="$NGIX_LOCATION" -v lineNumber="$LINE_NUMBER" 'NR==lineNumber{print location}1' /etc/nginx/sites-available/gradio-app-manager > /etc/nginx/sites-available/gradio-app-manager
 fi
 

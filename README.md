@@ -40,6 +40,26 @@ export TF_VAR_region='<home-region>'
 sh generate-keys.sh
 ```
 
+5. *(optional)* Configure the json file with other gradio apps.
+```json
+{
+    "appName": "whisper",
+    "appUrl": "https://huggingface.co/spaces/openai/whisper",
+    "requirements": ["transformers","git+https://github.com/openai/whisper.git"],
+    "Osdependencies": "ffmpeg",
+    "enviroment" {
+        "HF_TOKEN": "token",
+        "OTHER_URL": "http://localhost"
+    }
+}
+```
+
+- **appName:** Name of the app, used as identifier and for the final url.
+- **appUrl:** The git repo of the gradio app. 
+- **requirements:** If there is problem with the original requirements.txt, or one of the dependencies is set for a specific not supported OS, you can change the requirements of the app.
+- **Osdependencies:** Set of ubuntu OS dependencies if the app needs something aditional.
+- **enviroment** : Set of key value pair, for aditional configuration of the gradio app. 
+
 ## Build
 To build simply execute the next commands. 
 ```

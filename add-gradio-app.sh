@@ -65,7 +65,7 @@ GRADIO_SERVER_PORT=$((NUM_FILES + 10000))
 
     if [ "$REQUIREMENTS" != "null" ]; then
         rm $APP_DIR/requirements.txt
-        echo "$REQUIREMENTS" | jq -r -c '.[]' |
+        echo $REQUIREMENTS | jq -r -c '.[]' |
         while IFS=$"\n" read -r c; do
             echo $c >> $APP_DIR/requirements.txt
         done

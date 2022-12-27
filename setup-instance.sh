@@ -3,7 +3,7 @@
 main_function() {
 USER='ubuntu'
 apt-get update -y
-apt-get install wget git python3 python3-pip python3-venv unzip nginx jq rustc cargo ffmpeg -y
+apt-get install wget git python3 python3-pip python3-venv unzip nginx jq -y
 
 # Install cuda
 wget -O /etc/apt/preferences.d/cuda-repository-pin-600 https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-ubuntu2204.pin

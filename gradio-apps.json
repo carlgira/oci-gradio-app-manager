@@ -6,7 +6,8 @@
     {
         "appName": "whisper",
         "appUrl": "https://huggingface.co/spaces/openai/whisper",
-        "requirements": ["transformers","git+https://github.com/openai/whisper.git"]
+        "requirements": ["transformers","git+https://github.com/openai/whisper.git"],
+        "Osdependencies": "ffmpeg"
     },
     {
         "appName": "riffusion-demo",

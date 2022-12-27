@@ -39,9 +39,7 @@ server {
 }
 EOT
 else
-    printf "\n%s\n" "${delimiter}"
-    printf "Running on \e[1m\e[32m%s\e[0m user" "$(whoami)"
-    printf "\n%s\n" "${delimiter}"
+sed -i "s/# NEXT_LOCATION_FLAG/$NGIX_LOCATION# NEXT_LOCATION_FLAG/" /etc/nginx/sites-available/gradio-app-manager
 fi
 
 ln -s /etc/nginx/sites-available/$APP_NAME /etc/nginx/sites-enabled

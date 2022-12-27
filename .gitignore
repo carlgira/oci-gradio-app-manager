@@ -33,4 +33,5 @@ server.key
 server.key.pub
 .terraform.lock.hcl
 *.ckpt
+test.sh
 .DS_Store

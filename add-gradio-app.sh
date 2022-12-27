@@ -63,9 +63,10 @@ source $APP_DIR/.venv/bin/activate
 NUM_FILES=$(ls -1qA ~ | wc -l)
 GRADIO_SERVER_PORT=$((NUM_FILES + 10000))
 
+    echo "$REQUIREMENTS" 
     if [ "$REQUIREMENTS" != "null" ]; then
         rm $APP_DIR/requirements.txt
-        echo $REQUIREMENTS | jq -r -c '.[]' |
+        echo "$REQUIREMENTS" | jq -r -c '.[]' |
         while IFS=$"\n" read -r c; do
             echo $c >> $APP_DIR/requirements.txt
         done
@@ -106,4 +107,4 @@ done
 
 }
 
-add_all_apps $1 2>&1 >> /tmp/startup.log
+add_all_apps $1 2>&1 > /tmp/startup.log

@@ -38,16 +38,16 @@ server {
     # NEXT_LOCATION_FLAG
 }
 EOT
+ln -s /etc/nginx/sites-available/gradio-app-manager /etc/nginx/sites-enabled
 else
 LINE_NUMBER=$(awk '/#/ {print FNR}' /etc/nginx/sites-available/gradio-app-manager)
-awk -v location="$NGIX_LOCATION" -v lineNumber="$LINE_NUMBER" 'NR==lineNumber{print location}1' /etc/nginx/sites-available/gradio-app-manager > /etc/nginx/sites-available/gradio-app-manager
+awk -v location="$NGIX_LOCATION" -v lineNumber="$LINE_NUMBER" 'NR==lineNumber{print location}1' /etc/nginx/sites-available/gradio-app-manager > /tmp/gradio-app-manager && mv /tmp/gradio-app-manager /etc/nginx/sites-available/gradio-app-manager
 fi
 
 if [ "$DEPENDENCIES" != "null" ]; then
 sudo apt-get install $DEPENDENCIES -y
 fi
 
-ln -s /etc/nginx/sites-available/gradio-app-manager /etc/nginx/sites-enabled
 
 systemctl daemon-reload
 systemctl enable $APP_NAME
@@ -85,8 +85,8 @@ GRADIO_SERVER_PORT=$((NUM_FILES + 10000))
     fi
 
     pip install --upgrade pip
-    pip install gradio
-    pip install -r $APP_DIR/requirements.txt
+    pip -q install gradio
+    pip -q install -r $APP_DIR/requirements.txt
     
     VARS=''
     # check in ENVIRONMENT is not null

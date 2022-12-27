@@ -75,7 +75,6 @@ source $APP_DIR/.venv/bin/activate
 NUM_FILES=$(ls -1qA ~ | wc -l)
 GRADIO_SERVER_PORT=$((NUM_FILES + 10000))
 
-    echo "$REQUIREMENTS"
     if [ "$REQUIREMENTS" != "null" ]; then
         rm $APP_DIR/requirements.txt
         echo "$REQUIREMENTS" | jq -r -c '.[]' |

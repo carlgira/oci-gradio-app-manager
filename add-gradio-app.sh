@@ -10,7 +10,7 @@ APP_NAME=$2
 APP_DIR=$3 
 GRADIO_SERVER_PORT=$4
 
-cat <<EOT >> /etc/systemd/system/$APP_NAME.service
+cat <<EOT > /etc/systemd/system/$APP_NAME.service
 [Unit]
 Description=uWSGI instance to serve $APP_NAME
 After=network.target
@@ -25,7 +25,7 @@ ExecStart=/bin/bash $APP_DIR/start.sh
 WantedBy=multi-user.target
 EOT
 
-cat <<EOT >> /etc/nginx/sites-available/$APP_NAME
+cat <<EOT > /etc/nginx/sites-available/$APP_NAME
 server {
     listen 8000;
 
@@ -82,7 +82,7 @@ GRADIO_SERVER_PORT=$((NUM_FILES + 10000))
             VARS=$(echo -e "$VARS \n export $s")
         done
     fi
-    cat <<EOT >> $APP_DIR/start.sh
+    cat <<EOT > $APP_DIR/start.sh
 $VARS
 export GRADIO_SERVER_PORT=$GRADIO_SERVER_PORT 
 $APP_DIR/.venv/bin/python $APP_DIR/app.py

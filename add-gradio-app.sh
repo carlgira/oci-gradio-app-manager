@@ -82,9 +82,9 @@ GRADIO_SERVER_PORT=$((NUM_FILES + 10000))
         done
     fi
     cat <<EOT >> $APP_DIR/start.sh
-        $VARS
-        export GRADIO_SERVER_PORT=$GRADIO_SERVER_PORT 
-        $APP_DIR/.venv/bin/python $APP_DIR/app.py
+$VARS
+export GRADIO_SERVER_PORT=$GRADIO_SERVER_PORT 
+$APP_DIR/.venv/bin/python $APP_DIR/app.py
 EOT
 
 sudo bash -c "$(declare -f add_gradio_app_root); add_gradio_app_root $USER $APP_NAME $APP_DIR $GRADIO_SERVER_PORT"

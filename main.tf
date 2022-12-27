@@ -33,10 +33,6 @@ resource "oci_core_instance" "instance" {
     ssh_authorized_keys = file(var.ssh_public_key_path)
     user_data           = base64encode(file("setup-instance.sh"))
   }
-
-  extended_metadata = {
-      huggingface_token = var.huggingface_token
-  }
 }
 
 # Create datasource for availability domains

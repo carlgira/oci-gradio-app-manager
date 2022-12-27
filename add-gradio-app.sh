@@ -63,7 +63,7 @@ source $APP_DIR/.venv/bin/activate
 NUM_FILES=$(ls -1qA ~ | wc -l)
 GRADIO_SERVER_PORT=$((NUM_FILES + 10000))
 
-    echo "$REQUIREMENTS" 
+    echo "$REQUIREMENTS"
     if [ "$REQUIREMENTS" != "null" ]; then
         rm $APP_DIR/requirements.txt
         echo "$REQUIREMENTS" | jq -r -c '.[]' |
@@ -102,7 +102,7 @@ while IFS=$"\n" read -r c; do
     REQUIREMENTS=$(echo "$c" | jq -r '.requirements')
     ENVIRONMENT=$(echo "$c" | jq -r '.environment')
 
-    add_gradio_app $APP_NAME $APP_URL $REQUIREMENTS $ENVIRONMENT
+    add_gradio_app $APP_NAME $APP_URL "$REQUIREMENTS" $ENVIRONMENT
 done
 
 }

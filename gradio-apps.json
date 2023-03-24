@@ -1,16 +1,6 @@
 [
     {
-        "appName": "anime-gan",
-        "appUrl": "https://huggingface.co/spaces/akhaliq/AnimeGANv2"
-    },
-    {
-        "appName": "whisper",
-        "appUrl": "https://huggingface.co/spaces/openai/whisper",
-        "requirements": ["transformers","git+https://github.com/openai/whisper.git"],
-        "Osdependencies": "ffmpeg"
-    },
-    {
-        "appName": "spectrogram-to-music",
-        "appUrl": "https://huggingface.co/spaces/carlgira/spectrogram-to-music"
+        "appName": "yolo7-object-tracking",
+        "appUrl": "https://huggingface.co/spaces/Aditya9790/yolo7-object-tracking"
     }
 ]

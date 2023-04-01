@@ -1,6 +1,7 @@
 [
-    {
-        "appName": "yolo7-object-tracking",
-        "appUrl": "https://huggingface.co/spaces/Aditya9790/yolo7-object-tracking"
+     {
+        "appName": "whisper-speaker-diarization",
+        "appUrl": "vumichien/whisper-speaker-diarization",
+        "Osdependencies": "ffmpeg"
     }
 ]
